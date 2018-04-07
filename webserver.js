@@ -4,10 +4,10 @@ const http = require("http");
 const url = require("url");
 const fs = require("fs");
 const path = require("path");
+const webfolder = "www";
 const webserver = new http.createServer((req, res) => {
-	console.log(`${req.method} ${req.url}`);
 	const parsedUrl = url.parse(req.url);
-	let pathname = 'www' + parsedUrl.pathname;
+	let pathName = "./" + webfolder + parsedUrl.pathname;
 	const mimeType = {
 		".ico": "image/x-icon",
 		".html": "text/html",
@@ -24,28 +24,32 @@ const webserver = new http.createServer((req, res) => {
 		".eot": "appliaction/vnd.ms-fontobject",
 		".ttf": "aplication/font-sfnt"
 	};
-	fs.exists(pathname, function(exist) {
+	fs.exists(pathName, exist => {
 		if (!exist) {
 			// if the file is not found, return 404
 			res.statusCode = 404;
-			res.end(`File ${pathname} not found!`);
+			res.end("Error 404;<br>There is nothing at " + pathName);
 			return;
 		}
 		// if is a directory, then look for index.html
-		if (fs.statSync(pathname).isDirectory()) {
-			pathname += "/index.html";
+		// AGR this is corrupt, the what if it's a folder with no index.html?
+		// if is a directory, then look for index.html
+
+		if (fs.statSync(pathName).isDirectory()) {
+			pathName += "/index.html";
 		}
 		// read file from file system
-		fs.readFile(pathname, function(err, data) {
+		fs.readFile(pathName, (err, data) => {
 			if (err) {
 				res.statusCode = 500;
 				res.end(`Error getting the file: ${err}.`);
 			} else {
 				// based on the URL path, extract the file extention. e.g. .js, .doc, ...
-				const ext = path.parse(pathname).ext;
+				const ext = path.parse(pathName).ext;
 				// if the file is found, set Content-type and send data
 				res.setHeader("Content-type", mimeType[ext] || "text/plain");
 				res.end(data);
+				console.log("served file " + pathName);
 			}
 		});
 	});
@@ -55,12 +59,15 @@ webserver.on("error", err => {
 });
 //webserver.listen(8080);
 
-exports.create = (settings) => {
-	let settingsObj = JSON.parse(settings);
-	if(settingsObj.port === undefined) {
-		return -1;
+exports.create = settings => {
+	if (settings === undefined) {
+		settings = {};
+	}
+	if (settings.port === undefined) {
+		console.log('Webserver port not defined, using default 80');
+		settings.port = 80;
 	} else {
-		webserver.listen(settingsObj.port);
+		webserver.listen(settings.port);
 		return webserver;
 	}
 };
