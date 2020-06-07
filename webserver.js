@@ -66,8 +66,7 @@ exports.create = settings => {
 	if (settings.port === undefined) {
 		console.log('Webserver port not defined, using default 80');
 		settings.port = 80;
-	} else {
+	}
 		webserver.listen(settings.port);
 		return webserver;
-	}
 };
