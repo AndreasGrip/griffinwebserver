@@ -79,7 +79,7 @@ const webserver = new http.createServer((req, res) => {
         res.statusCode = 500;
         res.end(`Error getting the file: ${err}.`);
       } else {
-        // based on the URL path, extract the file extention. e.g. .js, .doc, ...
+        // based on the URL path, extract the file extension. e.g. .js, .doc, ...
         const ext = path.parse(pathName).ext;
         // if the file is found, set Content-type and send data
         res.setHeader('Content-type', mimeType[ext] || 'text/plain');
@@ -93,10 +93,7 @@ webserver.on('error', (err) => {
   console.log('Error: ' + err);
 });
 
-exports.create = (settings) => {
-  if (settings === undefined) {
-    settings = {};
-  }
+exports.create = (settings = {}) => {
   if (settings.port === undefined) {
     console.log('Webserver port not defined, using default 80');
     settings.port = 80;
