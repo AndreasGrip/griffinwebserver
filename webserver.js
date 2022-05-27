@@ -59,25 +59,26 @@ const webserver = new http.createServer((req, res) => {
     '.xml': 'text/xml',
     '.zip': 'application/zip',
   };
-  fs.exists(pathName, (exist) => {
-    if (!exist) {
-      // if the file is not found, return 404
+
+  fs.stat(pathName, (err, stat) => {
+    if (err) {
       res.statusCode = 404;
-      res.end('Error 404;<br>There is nothing at ' + pathName);
+      res.end('Error ' + res.statusCode + ';\n' + err.message);
       return;
     }
-    // if is a directory, then look for index.html
-    // AGR this is corrupt, the what if it's a folder with no index.html?
+
     // if is a directory, then look for index.html
 
-    if (fs.statSync(pathName).isDirectory()) {
-      pathName += '/index.html';
+    if (stat.isDirectory()) {
+      pathName = path.join(pathName, 'index.html');
     }
     // read file from file system
     fs.readFile(pathName, (err, data) => {
       if (err) {
-        res.statusCode = 500;
-        res.end(`Error getting the file: ${err}.`);
+        //TODO ENOENT should return status code 404
+        
+        res.statusCode = err.code === 'ENOENT' ? 404 : 500;
+        res.end('Error ' + res.statusCode + ';\n' + err.message);
       } else {
         // based on the URL path, extract the file extension. e.g. .js, .doc, ...
         const ext = path.parse(pathName).ext;
