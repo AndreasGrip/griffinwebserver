@@ -1,6 +1,9 @@
 This is just a basic webserver that will serve any fill inside your projects www folder.
 with no requirements at all = no node_modules folder needed.
 
+Note that this also means that as long as I don't want to add any new functionality there is no reason to update any files, unless node create some breaking changes.
+The project is not orphaned there is just no reason for security updates etc.
+
 Reason for creating this was that I ended up needing a server like this for most of my project and got tired of rewrite/copy it all the time.
 
 Usage:

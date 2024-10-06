@@ -83,7 +83,7 @@ const webserver = new http.createServer((req, res) => {
         // based on the URL path, extract the file extension. e.g. .js, .doc, ...
         const ext = path.parse(pathName).ext;
         // if the file is found, set Content-type and send data
-        res.setHeader('Content-type', mimeType[ext] || 'text/plain');
+        res.setHeader('Content-type', mimeType[ext] || 'application/octet-stream');
         res.end(data);
         console.log('served file ' + pathName);
       }
